@@ -12,7 +12,7 @@ function distanceMap(m) {
 
   } else if (m >= 1000) {
     return createMap(m/1000, " km");
-    
+
   } else {
     return createMap(m, " metres");
   }
@@ -76,7 +76,7 @@ const unitLookupList = [
       const km = i * 1.609344;
       if (i < 200) {
         return createMap(km, " km/h");
-        
+
       } else if (i >= 6706166) {
         return createMap(i/670616629.3844, "c");
 
@@ -103,6 +103,20 @@ const unitLookupList = [
                          "italy", "italian", "croatia", "brasil", "brazil", "turkey"]
   },
   {
+    "imperialUnits" : [/M/, /NM/, /nmi/],
+    "standardInputUnit" : "NM",
+    "isInvalidInput" : isZeroOrNegative,
+    "isWeaklyInvalidInput" : (i) => isHyperbole(i),
+    "conversionFunction" : (i) => distanceMap(i * 1853.24),
+    "ignoredUnits" : metricDistanceUnits,
+    "ignoredKeywords" : ["nanometer", "nanometers", "newton meters",
+                         "miles", "british", "newton per meter", "Mega",
+                         "churn", "credit card", "visa", "mastercard", "awardtravel",
+                         "air miles", "aeroplan", "points",
+                         "britain", "british", "england", "scotland", "wales", "uk",
+                         "italy", "italian", "croatia", "brasil", "brazil", "turkey"]
+  },
+  {
     "imperialUnits" : [/psi/, /pounds?[ -]?(?:force)?[- ]?(?:per|an?[/])[- ]?squared? inch/],
     "standardInputUnit" : " psi",
     "isInvalidInput" : isZeroOrNegative,
@@ -111,7 +125,7 @@ const unitLookupList = [
     "ignoredUnits" : [/pascals?/, /pa/]
   },
   {
-    "imperialUnits" : [/foot[ -·]?pounds?/, /pound[ -·]?foot/, 
+    "imperialUnits" : [/foot[ -·]?pounds?/, /pound[ -·]?foot/,
                        /ft[ -·]?lbf?/, /lb[ -·]?ft/],
     "standardInputUnit" : " ft·lbf",
     "isInvalidInput" : isZeroOrNegative,
@@ -129,8 +143,8 @@ const unitLookupList = [
     "ignoredUnits" : metricDistanceUnits,
     "ignoredKeywords" : ["size", "pole"],
     "preprocess" : (input) => {
-      const feetAndInchesRegex = 
-        new RegExp(( rh.startRegex 
+      const feetAndInchesRegex =
+        new RegExp(( rh.startRegex
           + rh.numberRegex
           + "[- ]?"
           + rh.regexJoinToString(["[\']", "ft", /feet/, /foot/])
@@ -158,7 +172,7 @@ const unitLookupList = [
       if (input.toString().indexOf('.') == -1) {
         return rh.addCommas(input) + " feet";
       } else {
-        return rh.addCommas(Math.floor(input).toString()) + "'" 
+        return rh.addCommas(Math.floor(input).toString()) + "'"
                + roundToDecimalPlaces(input%1 * 12, 0) + "\"";
       }
     },
@@ -196,8 +210,8 @@ const unitLookupList = [
     "ignoredUnits" : metricWeightUnits,
     "ignoredKeywords" : ["football", "soccer", "fifa"],
     "preprocess" : (input) => {
-      const lbAndOz = 
-        new RegExp(( rh.startRegex 
+      const lbAndOz =
+        new RegExp(( rh.startRegex
           + rh.numberRegex
           + "[- ]?"
           + rh.regexJoinToString([/lbs?/, /pounds?/])
@@ -220,7 +234,7 @@ const unitLookupList = [
       if (input.toString().indexOf('.') == -1) {
         return rh.addCommas(input) + " lb";
       } else {
-        return rh.addCommas(Math.floor(input).toString()) + " lb " 
+        return rh.addCommas(Math.floor(input).toString()) + " lb "
                + roundToDecimalPlaces(input%1 * 16, 0) + " oz";
       }
     }
@@ -283,7 +297,7 @@ const unitLookupList = [
     "ignoredUnits" : metricVolumeUnits
   },
   {
-    "imperialUnits" : [/\(?(?:uk|imp(?:erial)?)\)? gal(?:lons?)?/, 
+    "imperialUnits" : [/\(?(?:uk|imp(?:erial)?)\)? gal(?:lons?)?/,
                        /gal(?:lons?)? \(?(?:uk|imp(?:erial)?\)?)/],
     "standardInputUnit" : " gal (imp)",
     "isInvalidInput" : isZeroOrNegative,
@@ -362,8 +376,8 @@ function shouldConvertComment(comment, regexArray = globalIgnore, shouldBeUnique
     + rh.endRegex
   , 'i');
 
-  const hasIgnoredKeyword = input.match(ignoredWordRegex) 
-    || postTitle.match(ignoredWordRegex) 
+  const hasIgnoredKeyword = input.match(ignoredWordRegex)
+    || postTitle.match(ignoredWordRegex)
     || subreddit.match(new RegExp(rh.regexJoinToString(regexArray), 'i'));
 
   const hasQuotedText = input.match(/(^|\n)(>|&gt;)/);
@@ -385,11 +399,11 @@ function findPotentialConversions(comment) {
     let potentialConversions = [];
     const unitRegex = rh.regexJoinToString(unitArray);
 
-    const rangeRegex = new RegExp(rh.startRegex 
-                         + rh.rangeRegex 
-                         + "(?=[ -]?" 
-                           + unitRegex 
-                           + rh.endRegex 
+    const rangeRegex = new RegExp(rh.startRegex
+                         + rh.rangeRegex
+                         + "(?=[ -]?"
+                           + unitRegex
+                           + rh.endRegex
                          + ")",
                        'gi');
     const rangeMatches = string.match(rangeRegex);
@@ -411,13 +425,13 @@ function findPotentialConversions(comment) {
 
               potentialConversions.push({
                 "imperial": {
-                  "number" : in1, 
+                  "number" : in1,
                   "unit" : standardUnit
                 }
               });
               potentialConversions.push({
                 "imperial": {
-                  "number" : in2, 
+                  "number" : in2,
                   "unit" : standardUnit
                 }
               });
@@ -428,8 +442,8 @@ function findPotentialConversions(comment) {
     }
 
     const regex = new RegExp(rh.startRegex
-                    + rh.numberRegex 
-                    + "(?=[ -]?" 
+                    + rh.numberRegex
+                    + "(?=[ -]?"
                       + unitRegex
                       + rh.endRegex
                     + ")",
@@ -447,7 +461,7 @@ function findPotentialConversions(comment) {
         .forEach(match => {
           potentialConversions.push({
             "imperial" : {
-              "number" : match, 
+              "number" : match,
               "unit" : standardUnit
             }
           })
@@ -482,7 +496,7 @@ function findPotentialConversions(comment) {
 
     const conversions = findMatchForUnitsAndRemoveFromString(
                           map['imperialUnits'],
-                          map['standardInputUnit'], 
+                          map['standardInputUnit'],
                           processedInput);
     processedInput = conversions['string'];
     memo = memo.concat(conversions['potentialConversions']);
@@ -490,7 +504,7 @@ function findPotentialConversions(comment) {
     if (conversions['potentialConversions'].length > 0) {
       const weakConversions = findMatchForUnitsAndRemoveFromString(
                                 map['weakImperialUnits'],
-                                map['standardInputUnit'], 
+                                map['standardInputUnit'],
                                 processedInput);
 
       processedInput = weakConversions['string'];
@@ -569,18 +583,18 @@ function filterConversions(potentialConversions) {
     ]
   Output: metric and imperial conversions
     [
-      { 
-        "imperial" : 
-          { "number" : 10000, "unit" : " miles" }, 
-        "metric": 
-          { "number" : 16093.44, "unit" : " km" } 
+      {
+        "imperial" :
+          { "number" : 10000, "unit" : " miles" },
+        "metric":
+          { "number" : 16093.44, "unit" : " km" }
       },
-      { 
-        "imperial" : 
-          { "number" : 30, "unit" : " mpg" }, 
+      {
+        "imperial" :
+          { "number" : 30, "unit" : " mpg" },
         "metric" : [
           { "number" : 12.7543, "unit" : " km/L" },
-          { "number" : 7.84049, "unit" : " L/100km" } 
+          { "number" : 7.84049, "unit" : " L/100km" }
         ]
       }
     ]
@@ -599,37 +613,37 @@ function calculateMetric(imperialInputs) {
 /*
   Input: metric and imperial conversions
     [
-      { 
-        "imperial" : 
-          { "number" : 10000, "unit" : " miles" }, 
-        "metric": 
-          { "number" : 16093.44, "unit" : " km" } 
+      {
+        "imperial" :
+          { "number" : 10000, "unit" : " miles" },
+        "metric":
+          { "number" : 16093.44, "unit" : " km" }
       },
-      { 
-        "imperial" : 
-          { "number" : 30, "unit" : " mpg" }, 
+      {
+        "imperial" :
+          { "number" : 30, "unit" : " mpg" },
         "metric" : [
           { "number" : 12.7543, "unit" : " km/L" },
-          { "number" : 7.84049, "unit" : " L/100km" } 
+          { "number" : 7.84049, "unit" : " L/100km" }
         ]
       }
     ]
   Output: rounded metric and imperial conversions
     [
-      { 
-        "imperial" : 
-          { "number" : 10000, "unit" : " miles" }, 
-        "metric": 
+      {
+        "imperial" :
+          { "number" : 10000, "unit" : " miles" },
+        "metric":
           { "number" : 16093.44, "unit" : " km" },
         "rounded" :
           { "number" : 16000.44, "unit" : " km" }
       },
-      { 
-        "imperial" : 
-          { "number" : 30, "unit" : " mpg" }, 
+      {
+        "imperial" :
+          { "number" : 30, "unit" : " mpg" },
         "metric" : [
           { "number" : 12.7543, "unit" : " km/L" },
-          { "number" : 7.84049, "unit" : " L/100km" } 
+          { "number" : 7.84049, "unit" : " L/100km" }
         ]
       }
     ]
